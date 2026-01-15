@@ -1,17 +1,17 @@
+
 from django.core.management.base import BaseCommand
 from octofit_tracker.models import User, Team, Activity, Workout, Leaderboard
 from django.utils import timezone
+from django.db import connection
 
 class Command(BaseCommand):
     help = 'Populate the octofit_db database with test data'
 
     def handle(self, *args, **kwargs):
-        # Clear existing data
-        Activity.objects.all().delete()
-        Workout.objects.all().delete()
-        Leaderboard.objects.all().delete()
-        User.objects.all().delete()
-        Team.objects.all().delete()
+        # Drop collections directly to avoid Djongo delete bug
+        db = connection.cursor().db_conn.client['octofit_db']
+        for coll in ['activity', 'workout', 'leaderboard', 'user', 'team']:
+            db[coll].drop()
 
         # Create Teams
         marvel = Team.objects.create(name='Marvel', description='Marvel Superheroes')
