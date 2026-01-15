@@ -30,12 +30,14 @@ router.register(r'leaderboards', LeaderboardViewSet)
 
 @api_view(['GET'])
 def api_root(request, format=None):
+    # Dynamically build the base URL using the request host (supports Codespace and localhost)
+    base_url = f"https://{request.get_host()}"
     return Response({
-        'users': reverse('user-list', request=request, format=format),
-        'teams': reverse('team-list', request=request, format=format),
-        'activities': reverse('activity-list', request=request, format=format),
-        'workouts': reverse('workout-list', request=request, format=format),
-        'leaderboards': reverse('leaderboard-list', request=request, format=format),
+        'users': base_url + reverse('user-list'),
+        'teams': base_url + reverse('team-list'),
+        'activities': base_url + reverse('activity-list'),
+        'workouts': base_url + reverse('workout-list'),
+        'leaderboards': base_url + reverse('leaderboard-list'),
     })
 
 urlpatterns = [
