@@ -13,6 +13,8 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
+import os
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework import routers
@@ -30,8 +32,12 @@ router.register(r'leaderboards', LeaderboardViewSet)
 
 @api_view(['GET'])
 def api_root(request, format=None):
-    # Dynamically build the base URL using the request host (supports Codespace and localhost)
-    base_url = f"https://{request.get_host()}"
+    # Use CODESPACE_NAME env variable if available, else fallback to request host
+    codespace_name = os.environ.get('CODESPACE_NAME')
+    if codespace_name:
+        base_url = f"https://{codespace_name}-8000.app.github.dev"
+    else:
+        base_url = f"https://{request.get_host()}"
     def abs_url(component):
         return f"{base_url}/api/{component}/"
     return Response({
